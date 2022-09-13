@@ -32,6 +32,7 @@ boxes = []
 confidences = []
 class_ids = []
 
+#fucntion to detect plate
 def detectPlate(file):
     img = cv2.imread(file)
     height, width, _ = img.shape
@@ -70,9 +71,6 @@ def detectPlate(file):
             crop_img = img[y:y+h, x:x+w]
             saved = savefImg(crop_img)
             return saved
-            
-#later add show function
-        
 
 #function to save files
 def savefImg(file):
@@ -84,9 +82,7 @@ def savefImg(file):
         return None
     return path
 
-#create log file then after reading it, delete using os.remove()
-#needs to be saved so can pass into readPlate function
-#function to read from car plate
+#function to read text from plate
 def readPlate(file):
     result = reader.readtext(file)
     result 
@@ -98,10 +94,11 @@ def readPlate(file):
         font = cv2.FONT_HERSHEY_SIMPLEX
         img = cv2.rectangle(img, top_left, bottom_right, (0,255,0), 5)
         img = cv2.putText(img, text, top_left, font, 2, (255,255,255), 2, cv2.LINE_AA)
-    with open('number.txt', 'w') as n:
-        n.write(text)
-        #don't need to show the text, or make another plt to show text 
+        #saving the result into csv file
+        with open('/Users/nighttwinkle/Documents/ANPR-V0.2/Saved detection/Car plate and color/numbers.csv', 'w') as n:
+            n.write(text)
 
+#function to detect car
 def detectCar(file):
     img = cv2.imread(file)
     height, width, _ = img.shape
@@ -141,6 +138,7 @@ def detectCar(file):
             crop_img = img[y:y+h, x:x+w]
             saved = savefImg(crop_img)
             return saved
+
 
 
 

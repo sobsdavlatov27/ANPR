@@ -1,49 +1,56 @@
 import os
-from subprocess import call #needed to manipulate files 
-import cv2 #maybe deleted 
 import tkinter as tk 
-from datetime import datetime #only needed to save files wihtout overwriting them
 from tkinter import filedialog
 import detect_func as df
 import matplotlib.pyplot as plt
+from detect_func import detectCar, detectPlate 
 
-from detect_func import detectCar, detectPlate
 
-
-#fucntion to initialize main window
+#function for main window
 def mainwin():
     global root 
     root = tk.Tk()
     root.geometry('200x200')
     root.title("ANPR")
-#filedialog function 
+
+
+#function to call filedialog
 def callback():
     root.filename = filedialog.askopenfilename(parent=root, 
                                                initialdir= "/path/to/start",
                                                title = "Choose a file")
     filetype(root.filename)
-#filetype check function, cheks then uses two functions to detect from image and detect from video
+
+#function to check filetype
 def filetype(file):
     if file.endswith('.jpeg'):
         detectFromImg(file)
     else: 
-        pass #video detection function
+        pass
 
-
-#funtion to get colro of a vehicle
+#function to detect from image
 def detectFromImg(file):
-    #saves images of detection and text
     car_img = df.detectCar(file)
     plate_img = df.detectPlate(file)
-    text_img = df.readPlate(file)
- #add 3 subplots into 1 plot
+    text_img = df.readPlate(file) 
 
 
+    #showing preview of detection
+    car_imgPLT = plt.imread(car_img)
+    plate_imgPLT = plt.imread(plate_img)
+    row = 1 
+    columns = 3
+    fig = plt.figure(figsize=(10,10))
+    fig.add_subplot(row, columns, 1)
+    plt.imshow(car_imgPLT)
+    fig.add_subplot(row, columns, 2)
+    plt.imshow(plate_imgPLT) #need to g
+    plt.show()
 
 def detectFromVideo(file):
     pass 
 
-detectFromImg('/Users/nighttwinkle/Downloads/Testing images/ford_vtti_research_04_hr_1280x720.jpeg')
+
 
 
 

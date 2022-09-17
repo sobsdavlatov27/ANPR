@@ -1,9 +1,10 @@
 import os
+import cv2
 import tkinter as tk 
 from tkinter import filedialog
 import detect_func as df
 import matplotlib.pyplot as plt
-from detect_func import detectCar, detectPlate 
+from detect_func import detectCar, detectFromVideo, detectPlate 
 
 
 #function for main window
@@ -26,7 +27,7 @@ def filetype(file):
     if file.endswith('.jpeg'):
         detectFromImg(file)
     else: 
-        pass
+        detectFromVideo(file)
 
 #function to detect from image
 def detectFromImg(file):
@@ -47,8 +48,15 @@ def detectFromImg(file):
     plt.imshow(plate_imgPLT) #need to g
     plt.show()
 
-def detectFromVideo(file):
-    pass 
+
+
+
+
+
+
+
+
+
 
 
 

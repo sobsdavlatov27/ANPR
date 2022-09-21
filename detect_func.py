@@ -11,8 +11,7 @@ from PIL import Image
 #load YOLOv3 and YOLOv3 custom
 net = cv2.dnn.readNet('/Users/nighttwinkle/Documents/ANPR-V0.2/Weights/yolov3_custom.weights', 
                       '/Users/nighttwinkle/Documents/ANPR-V0.2/YoloV3 cfg/yolov3_custom.cfg')
-net_car = cv2.dnn.readNet('/Users/nighttwinkle/Documents/ANPR-V0.2/Weights/yolov3.weights',
-                          '/Users/nighttwinkle/Documents/ANPR-V0.2/YoloV3 cfg/yolov3.cfg')
+net_car = cv2.dnn.readNet('yolov3_custom3.weights', 'yolov3_custom3.cfg')
 #easyOCR pipeline
 reader = easyocr.Reader(['en'], gpu=True)
 
@@ -28,6 +27,7 @@ with open('obj.names', 'r') as pc:
 
 font = cv2.FONT_HERSHEY_PLAIN
 colors = np.random.uniform(0, 255, size=(100, 3))
+text = "Press 'q' to quit"
 
 boxes = []
 confidences = []
@@ -136,7 +136,7 @@ def detectCar(file):
             crop_img = img[y:y+h, x:x+w]
             saved = savefImg(crop_img)
             return saved
-#function to detect from video
+
 def detectFromVideo(file):
 
     cap = cv2.VideoCapture(file)
@@ -173,25 +173,82 @@ def detectFromVideo(file):
                     class_ids.append(class_id)
 
         indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.2, 0.4)
-
-        if len(indexes)>0:
-            for i in indexes.flatten():
-                x, y, w, h = boxes[i]
-                label = str(vehicle_class[class_ids[i]])
-                confidence = str(round(confidences[i],2))
-                color = colors[i]
-                cv2.rectangle(img, (x,y), (x+w, y+h), color, 2)
-                crop_img = img[y:y+h, x:x+w]
-                saved = savefImg(crop_img)
-                plate_img = detectPlate(saved)
-                plate_text = readPlate(plate_img)
+        if class_id == 'car':
+            if len(indexes)>0:
+                for i in indexes.flatten():
+                    x, y, w, h = boxes[i]
+                    label = str(vehicle_class[class_ids[i]])
+                    confidence = str(round(confidences[i],2))
+                    color = colors[i]
+                    cv2.rectangle(img, (x,y), (x+w, y+h), color, 2)
+                    crop_img = img[y:y+h, x:x+w]
+                    saved = savefImg(crop_img)
+                    plate_img = detectPlate(saved)
+                    plate_text = readPlate(plate_img)
+        cv2.putText(img,  text, (100,100), font, 2, (255,255,255), 2)
         cv2.imshow('Image', img)
         if cv2.waitKey(1) & 0xFF==ord('q'):
             break
 
     cap.release()
     cv2.destroyAllWindows()
-   
+        
+def detectFromCam():
+
+    cap = cv2.VideoCapture(0)
+
+    while True: 
+        _, img = cap.read()
+        height, width, _ = img.shape
+
+        blob = cv2.dnn.blobFromImage(img, 1/255, (416, 416), (0,0,0), swapRB=True, crop=False)
+        net_car.setInput(blob)
+        output_layers_names = net.getUnconnectedOutLayersNames()
+        layerOutputs = net_car.forward(output_layers_names)
+
+        boxes = []
+        confidences = []
+        class_ids = []
+
+        for output in layerOutputs:
+            for detection in output:
+                scores = detection[5:]
+                class_id = np.argmax(scores)
+                confidence = scores[class_id]
+                if confidence > 0.8:
+                    center_x = int(detection[0]*width)
+                    center_y = int(detection[1]*height)
+                    w = int(detection[2]*width)
+                    h = int(detection[3]*height)
+
+                    x = int(center_x - w/2)
+                    y = int(center_y - h/2)
+
+                    boxes.append([x, y, w, h])
+                    confidences.append((float(confidence)))
+                    class_ids.append(class_id)
+        if class_ids == 'car' or 'motobike' or 'bus' or 'truck':
+            indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.2, 0.4)
+            if len(indexes)>0:
+                for i in indexes.flatten():
+                    x, y, w, h = boxes[i]
+                    label = str(vehicle_class[class_ids[i]])
+                    confidence = str(round(confidences[i],2))
+                    color = colors[i]
+                    cv2.rectangle(img, (x,y), (x+w, y+h), color, 2)
+                    crop_img = img[y:y+h, x:x+w]
+                    saved = savefImg(crop_img)
+                    plate_img = detectPlate(saved)
+            cv2.putText(img,  text, (100,100), font, 2, (255,255,255), 2)
+            cv2.imshow('Image', img)
+            if cv2.waitKey(1) & 0xFF==ord('q'):
+                break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+
+
 
 
 

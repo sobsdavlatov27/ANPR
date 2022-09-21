@@ -9,9 +9,9 @@ import numpy as np
 from PIL import Image
 
 #load YOLOv3 and YOLOv3 custom
-net = cv2.dnn.readNet('/Users/nighttwinkle/Documents/ANPR-V0.2/Weights/yolov3_custom.weights', 
-                      '/Users/nighttwinkle/Documents/ANPR-V0.2/YoloV3 cfg/yolov3_custom.cfg')
-net_car = cv2.dnn.readNet('yolov3_custom3.weights', 'yolov3_custom3.cfg')
+net = cv2.dnn.readNet('/Users/nighttwinkle/Documents/ANPR-V0.2/Weights/yolov3_plate.weights', 
+                      '/Users/nighttwinkle/Documents/ANPR-V0.2/YoloV3 cfg/yolov3_plate.cfg')
+net_car = cv2.dnn.readNet('yolov3_land_vehicle.weights', 'yolov3_land_vehicle.cfg')
 #easyOCR pipeline
 reader = easyocr.Reader(['en'], gpu=True)
 

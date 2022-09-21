@@ -3,4 +3,4 @@ Custom ANPR system to detect land vehicles, vehicle registration plate and color
 # How to run the program
 1. To use system donwload Weights from this link https://drive.google.com/drive/u/0/folders/1h7R4GFkNrsl3GnqQ0D83MhMiz8pvFGFE Create "Weights" folder inside of directory and put these files inside the folder. 
 2. Run 'main.py' script
-# Current version works only on images in .jpeg format and .mp4 video format
+# The program works with .jpeg and .mp4 files. The program aslo has feature to detect from camera. 
